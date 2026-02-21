@@ -1,27 +1,32 @@
 import uuid
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from .managers import UserManager
 
-class User(AbstractBaseUser, PermissionsMixin):
+
+class User(AbstractUser):
 
     ROLE_CHOICES = (
-        ("PATIENT", "Patient"),
-        ("DOCTOR", "Doctor"),
         ("ADMIN", "Admin"),
+        ("DOCTOR", "Doctor"),
+        ("PATIENT", "Patient"),
     )
 
+    # Replace default ID with UUID
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # Remove username field (we use email instead)
+    username = None
+
+    # Email as unique login field
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default="PATIENT"
+    )
+
     is_verified = models.BooleanField(default=False)
-
-    date_joined = models.DateTimeField(auto_now_add=True)
-
-    objects = UserManager()
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
