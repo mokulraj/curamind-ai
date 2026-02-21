@@ -1,5 +1,7 @@
 from django.contrib import admin
+from core.views import DashboardView
 from django.urls import path, include
+from users.views import CustomTokenObtainPairView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -24,4 +26,10 @@ urlpatterns = [
     # API Schema & Docs
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    
+    path("admin/", admin.site.urls),
+    path("api/", include("appointments.urls")),
+    path("api/dashboard/", DashboardView.as_view()),
+    
+    path("api/token/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
 ]
